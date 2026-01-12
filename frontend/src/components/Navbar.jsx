@@ -27,33 +27,17 @@ export default function Navbar() {
     return () => window.removeEventListener("storage", checkAdmin);
   }, [navigate]);
 
-  // 👤 Firebase auth listener (FINAL FIX)
+  // 👤 Firebase auth listener
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
-      const isSigningUp = localStorage.getItem("isSigningUp") === "true";
-
-      if (isSigningUp) {
-        // 🚫 Ignore auto-login during signup
-        setUser(null);
-
-        // ✅ Wait until Firebase confirms logout
-        if (!currentUser) {
-          setAuthLoading(false);
-        }
-        return;
-      }
-
       setUser(currentUser);
       setAuthLoading(false);
     });
 
-    if (localStorage.getItem("theme") === "dark") {
-      document.body.classList.add("dark");
-    }
-
     return unsub;
   }, []);
 
+  // Navigate to Add Report page only if user is logged in
   const handleReportClick = () => {
     if (!user) {
       alert("You must login first!");
@@ -61,14 +45,6 @@ export default function Navbar() {
       return;
     }
     navigate("/add");
-  };
-
-  const toggleTheme = () => {
-    document.body.classList.toggle("dark");
-    localStorage.setItem(
-      "theme",
-      document.body.classList.contains("dark") ? "dark" : "light"
-    );
   };
 
   const logoutUser = async () => {
@@ -83,7 +59,7 @@ export default function Navbar() {
     navigate("/admin-login");
   };
 
-  // ⛔ Block render until auth is truly stable
+  // ⛔ Block render until auth is stable
   if (authLoading) return null;
 
   return (
@@ -101,7 +77,6 @@ export default function Navbar() {
             Report
           </button>
         </li>
-
         {adminLogged && (
           <li>
             <Link className="navbar-link" to="/admin-dashboard">
@@ -112,8 +87,6 @@ export default function Navbar() {
       </ul>
 
       <div className="nav-right">
-        <button className="theme-toggle" onClick={toggleTheme}>🌙</button>
-
         {!adminLogged ? (
           <Link className="navbar-btn login" to="/admin-login">Admin</Link>
         ) : (

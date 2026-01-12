@@ -1,12 +1,10 @@
-// src/App.jsx
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
-// ✅ Components (case-sensitive, explicit extensions)
 import Layout from "./components/Layout.jsx";
+import AdminLayout from "./components/AdminLayout.jsx";
 import AdminRoute from "./components/AdminRoute.jsx";
 
-// ✅ Pages (case-sensitive, explicit extensions)
 import Home from "./pages/Home.jsx";
 import About from "./pages/About.jsx";
 import AddItem from "./pages/AddItem.jsx";
@@ -16,16 +14,20 @@ import AdminDashboard from "./pages/AdminDashboard.jsx";
 
 export default function App() {
   return (
-    <Layout>
-      <Routes>
-        {/* Public Routes */}
+    <Routes>
+      {/* ---------- PUBLIC PAGES (Navbar + Footer) ---------- */}
+      <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/add" element={<AddItem />} />
         <Route path="/login" element={<Login />} />
+      </Route>
+
+      {/* ---------- ADMIN PAGES (Navbar only) ---------- */}
+      <Route element={<AdminLayout />}>
         <Route path="/admin-login" element={<AdminLogin />} />
 
-        {/* Protected Admin Route */}
+        {/* Protected Admin Dashboard */}
         <Route
           path="/admin-dashboard"
           element={
@@ -34,7 +36,10 @@ export default function App() {
             </AdminRoute>
           }
         />
-      </Routes>
-    </Layout>
+      </Route>
+
+      {/* Catch-all redirect */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
