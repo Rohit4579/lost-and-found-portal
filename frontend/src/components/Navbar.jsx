@@ -7,37 +7,33 @@ import "../index.css";
 
 export default function Navbar() {
   const navigate = useNavigate();
+
   const [user, setUser] = useState(null);
   const [adminLogged, setAdminLogged] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // 🔐 Admin listener
+  /* 🔐 Admin check */
   useEffect(() => {
     const checkAdmin = () => {
-      const isAdmin = localStorage.getItem("admin") === "true";
-      setAdminLogged(isAdmin);
-
-      if (!isAdmin && window.location.pathname === "/admin-dashboard") {
-        navigate("/admin-login", { replace: true });
-      }
+      setAdminLogged(localStorage.getItem("admin") === "true");
     };
 
     checkAdmin();
     window.addEventListener("storage", checkAdmin);
     return () => window.removeEventListener("storage", checkAdmin);
-  }, [navigate]);
+  }, []);
 
-  // 👤 Firebase auth listener
+  /* 👤 Firebase auth */
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setAuthLoading(false);
     });
-
     return unsub;
   }, []);
 
-  // Navigate to Add Report page only if user is logged in
+  /* 🚨 Guard report */
   const handleReportClick = () => {
     if (!user) {
       alert("You must login first!");
@@ -45,66 +41,123 @@ export default function Navbar() {
       return;
     }
     navigate("/add");
+    setMenuOpen(false);
   };
 
+  /* 👤 User logout */
   const logoutUser = async () => {
     await signOut(auth);
     setUser(null);
+    setMenuOpen(false);
     navigate("/");
   };
 
+  /* 🔐 Admin logout (FIXED) */
   const logoutAdmin = () => {
     localStorage.removeItem("admin");
-    setAdminLogged(false);
+    setAdminLogged(false); // 🔥 THIS IS THE FIX
+    setMenuOpen(false);
     navigate("/admin-login");
   };
 
-  // ⛔ Block render until auth is stable
   if (authLoading) return null;
 
   return (
     <nav className="dyptc-navbar">
-      <div className="navbar-logo">D.Y.P.T.C Lost & Found Portal</div>
+      <div className="navbar-logo">D.Y.P.T.C Lost & Found</div>
 
-      <ul className="navbar-list">
-        <li><Link className="navbar-link" to="/">Home</Link></li>
-        <li><Link className="navbar-link" to="/about">About</Link></li>
-        <li>
-          <button
-            className="navbar-link navbar-report-btn"
-            onClick={handleReportClick}
-          >
-            Report
-          </button>
-        </li>
+      {/* DESKTOP NAV */}
+      <ul className="navbar-list desktop-only">
+        <li><Link to="/">Home</Link></li>
+        <li><Link to="/about">About</Link></li>
+        <li><button onClick={handleReportClick}>Report</button></li>
+
         {adminLogged && (
           <li>
-            <Link className="navbar-link" to="/admin-dashboard">
-              Admin Dashboard
-            </Link>
+            <Link to="/admin-dashboard">Admin Dashboard</Link>
           </li>
         )}
       </ul>
 
-      <div className="nav-right">
+      {/* DESKTOP ACTIONS */}
+      <div className="nav-right desktop-only">
         {!adminLogged ? (
-          <Link className="navbar-btn login" to="/admin-login">Admin</Link>
+          <Link to="/admin-login">Admin</Link>
         ) : (
-          <button className="navbar-btn logout" onClick={logoutAdmin}>
+          <button className="logout" onClick={logoutAdmin}>
             Admin Logout
           </button>
         )}
 
         {user ? (
-          <button className="navbar-btn logout" onClick={logoutUser}>
+          <button className="logout" onClick={logoutUser}>
             Logout
           </button>
         ) : (
-          <Link className="navbar-btn login" to="/login">
-            Login
-          </Link>
+          <Link to="/login">Login</Link>
         )}
       </div>
+
+      {/* 🍔 HAMBURGER */}
+      <button
+        className={`hamburger ${menuOpen ? "open" : ""}`}
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Toggle menu"
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+
+      {/* OVERLAY */}
+      {menuOpen && (
+        <div
+          className="menu-overlay"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
+
+      {/* 📱 MOBILE MENU */}
+      <aside className={`mobile-menu ${menuOpen ? "show" : ""}`}>
+        <ul>
+          <li><Link to="/" onClick={() => setMenuOpen(false)}>Home</Link></li>
+          <li><Link to="/about" onClick={() => setMenuOpen(false)}>About</Link></li>
+          <li><button onClick={handleReportClick}>Report</button></li>
+
+          {adminLogged && (
+            <li>
+              <Link
+                to="/admin-dashboard"
+                onClick={() => setMenuOpen(false)}
+              >
+                Admin Dashboard
+              </Link>
+            </li>
+          )}
+        </ul>
+
+        <div className="mobile-actions">
+          {!adminLogged ? (
+            <Link to="/admin-login" onClick={() => setMenuOpen(false)}>
+              Admin
+            </Link>
+          ) : (
+            <button className="logout" onClick={logoutAdmin}>
+              Admin Logout
+            </button>
+          )}
+
+          {user ? (
+            <button className="logout" onClick={logoutUser}>
+              Logout
+            </button>
+          ) : (
+            <Link to="/login" onClick={() => setMenuOpen(false)}>
+              Login
+            </Link>
+          )}
+        </div>
+      </aside>
     </nav>
   );
 }
