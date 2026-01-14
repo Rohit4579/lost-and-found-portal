@@ -17,6 +17,10 @@
   --transition-fast: 0.25s ease;
   --transition-slow: 0.4s ease;
 }
+html, body {
+  overflow-x: hidden;
+}
+
 
 /* =========================================================
    🌙 DARK MODE BODY
@@ -265,7 +269,8 @@ body {
 ===================================================== */
 .auth-container {
   width: 100%;
-  max-width: 420px;
+  max-width: 400px;
+  padding-right: 500px;
   margin: 60px auto;
   padding: 36px 32px;
   background: #11131a;
@@ -275,6 +280,8 @@ body {
   font-family: "Inter", sans-serif;
   animation: fadeIn 0.4s ease-in-out;
 }
+
+
 
 .auth-title {
   text-align: center;
@@ -371,6 +378,43 @@ body {
   color: #06b6d4;
   text-decoration: underline;
 }
+
+/* =========================
+   MOBILE RESPONSIVE – USER LOGIN / SIGNUP
+========================= */
+@media (max-width: 480px) {
+  /* Container adjustments */
+  .auth-container {
+    margin: 20px auto;        /* reduce top/bottom margin */
+    padding: 28px 20px;       /* slightly smaller padding */
+    max-width: 100%;          /* full width minus padding */
+    box-sizing: border-box;   /* ensure it doesn't overflow */
+  }
+
+  /* Title smaller on mobile */
+  .auth-title {
+    font-size: 22px;          /* smaller title */
+    margin-bottom: 18px;
+  }
+
+  /* Inputs smaller */
+  .auth-form input {
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+
+  /* Button smaller */
+  .auth-btn {
+    font-size: 15px;
+    padding: 12px;
+  }
+
+  /* Toggle text smaller */
+  .toggle-auth {
+    font-size: 14px;
+  }
+}
+
 
 /* =========================================================
    ADMIN LOGIN PAGE – DARK THEME
@@ -921,6 +965,10 @@ body {
 /* =====================================================
    HOME PAGE – NETFLIX DARK THEME
 ===================================================== */
+
+
+
+
 .home-container {
   display: flex;
   flex-direction: column;
@@ -1366,8 +1414,8 @@ body {
   flex: 1;
   background: linear-gradient(180deg, #020617 0%, #0a0f20 100%);
   color: #e5e7eb;
-  font-family: "Inter", sans-serif;
-  margin-bottom: -60px; /* space for footer */
+  font-family: "Inter", sans-serif; 
+  margin-bottom: -60px;
 }
 
 /* =====================
@@ -1651,49 +1699,32 @@ body {
     display: none;
   }
 }
-
-
 /* =====================================================
    NAVBAR – DARK NETFLIX STYLE
+===================================================== */
+
 /* ========================= NAVBAR BASE ========================= */
 .dyptc-navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-
   background: #1e1e1e;
   color: #fff;
-
   width: 100%;
-  z-index: 1000;
-
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 4000;
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* ✅ DESKTOP FIXED NAVBAR (REPLACES STICKY) */
-@media (min-width: 769px) {
-  .dyptc-navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-  }
-
-  /* Push page content below navbar */
-  .page-content {
-    padding-top: 70px;
-  }
+/* Push page content below navbar (desktop + mobile) */
+.page-content {
+  padding-top: 70px;
 }
 
-/* Scroll effect */
-.dyptc-navbar.scrolled {
-  background: rgba(15, 15, 15, 0.95);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
-}
-
-
-
+/* ========================= LOGO ========================= */
 .navbar-logo {
   font-weight: bold;
   font-size: 1.3rem;
@@ -1705,7 +1736,7 @@ body {
   transform: scale(1.05);
 }
 
-/* Navbar links */
+/* ========================= DESKTOP NAV ========================= */
 .navbar-list,
 .nav-right {
   display: flex;
@@ -1714,7 +1745,6 @@ body {
   align-items: center;
 }
 
-/* Links/buttons base style */
 .navbar-list a,
 .navbar-list button,
 .nav-right a,
@@ -1728,8 +1758,6 @@ body {
   position: relative;
   transition: color 0.25s ease, transform 0.25s ease;
 }
-
-/* ========================= DESKTOP LINK HOVER ========================= */
 
 .navbar-list a:hover,
 .navbar-list button:hover,
@@ -1756,14 +1784,14 @@ body {
   width: 100%;
 }
 
-/* ========================= PRIMARY BUTTONS (DESKTOP) ========================= */
+/* ========================= PRIMARY BUTTONS ========================= */
 .navbar-btn,
 .nav-right a,
 .nav-right button {
   padding: 0.45rem 0.9rem;
   border-radius: 6px;
-  background: #e50914; /* original red */
-  color: #ffffff; /* keep text white */
+  background: #e50914;
+  color: #ffffff;
   font-weight: 500;
   transition: background 0.25s ease, transform 0.25s ease, text-shadow 0.25s ease;
 }
@@ -1771,37 +1799,36 @@ body {
 .navbar-btn:hover,
 .nav-right a:hover,
 .nav-right button:hover {
-  background: #ff1f1f; /* brighter red */
+  background: #ff1f1f;
   transform: translateY(-1px);
-  color: #ffffff; /* ensure text stays white */
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); /* subtle shadow for readability */
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-/* Admin / Logout buttons */
 .nav-right .logout {
   background: #b20710;
-  color: #ffffff;
 }
 
 .nav-right .logout:hover {
   background: #e50914;
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); /* subtle shadow on hover */
 }
 
-/* ========================= HAMBURGER (Mobile) ========================= */
+/* ========================= HAMBURGER (MOBILE) ========================= */
 .hamburger {
   display: none;
   flex-direction: column;
+  justify-content: center; /* vertically center lines */
   gap: 5px;
+  width: 28px;
+  height: 24px;
   background: none;
   border: none;
   cursor: pointer;
-  z-index: 3000;
+  z-index: 4500;
 }
 
 .hamburger span {
-  width: 26px;
+  width: 100%;
   height: 3px;
   background: #e5e7eb;
   border-radius: 2px;
@@ -1811,20 +1838,21 @@ body {
 .hamburger.open span:nth-child(1) {
   transform: rotate(45deg) translateY(8px);
 }
+
 .hamburger.open span:nth-child(2) {
   opacity: 0;
 }
+
 .hamburger.open span:nth-child(3) {
   transform: rotate(-45deg) translateY(-8px);
 }
 
-/* ========================= MOBILE MENU OVERLAY ========================= */
+/* ========================= MOBILE OVERLAY ========================= */
 .menu-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
-  z-index: 1500;
-  overscroll-behavior: contain;
+  z-index: 3000;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
@@ -1835,23 +1863,23 @@ body {
   pointer-events: auto;
 }
 
-/* ========================= MOBILE MENU SIDEBAR ========================= */
+/* ========================= MOBILE MENU (RIGHT SIDE DRAWER) ========================= */
 .mobile-menu {
   position: fixed;
   top: 0;
-  right: 0;
-  width: 260px;
+  right: 0; /* menu opens from right */
+  left: auto;
+  width: 220px; /* smaller menu width */
   height: 100%;
   background: #0f111a;
-  padding: 80px 20px 20px;
+  padding: 70px 15px 20px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  transform: translateX(100%);
+  gap: 20px;
+  transform: translateX(100%); /* hidden by default */
   transition: transform 0.35s cubic-bezier(0.25,1,0.5,1);
-  z-index: 2000;
+  z-index: 3500;
   overflow-y: auto;
-  overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   box-shadow: -4px 0 15px rgba(0,0,0,0.5);
 }
@@ -1860,82 +1888,44 @@ body {
   transform: translateX(0);
 }
 
-/* ========================= MOBILE MENU LINKS (ATTRACTIVE) ========================= */
+/* ========================= MOBILE MENU LINKS ========================= */
 .mobile-menu ul {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px; /* smaller gap, more compact */
-  width: 100%;
+  gap: 12px;
 }
 
-.mobile-menu ul li {
-  width: 100%;
-}
-
-/* Mobile links - clickable button style */
 .mobile-menu ul li a,
 .mobile-menu ul li button {
-  color: #ffffff !important;            /* white text */
-  background: rgba(255, 255, 255, 0.05); /* subtle transparent background */
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.05);
   border: none;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   text-align: left;
   cursor: pointer;
   font-weight: 500;
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 10px;
   display: flex;
   align-items: center;
-  border-radius: 8px;                   /* rounded edges */
-  opacity: 0;                            /* hidden initially for animation */
-  transform: translateX(20px);
-  animation: slideIn 0.35s forwards;
-  transition: all 0.25s ease;           /* smooth hover */
+  border-radius: 8px;
   text-decoration: none !important;
-  position: relative;
+  transition: all 0.25s ease;
 }
 
-/* Remove underline from pseudo-elements */
 .mobile-menu ul li a::after,
 .mobile-menu ul li button::after {
   content: none !important;
-  display: none !important;
 }
 
-/* Hover effect - more noticeable */
 .mobile-menu ul li a:hover,
 .mobile-menu ul li button:hover {
-  color: #ffffff;                        /* bright white */
-  background: rgba(255, 255, 255, 0.15); /* stronger highlight */
-  transform: scale(1.02);                /* slight zoom effect */
-  box-shadow: 0 2px 8px rgba(255,255,255,0.2); /* subtle glow */
-}
-
-/* Slide-in animation on menu show */
-.mobile-menu.show ul li a,
-.mobile-menu.show ul li button {
-  opacity: 0;
-  transform: translateX(30px);
-  animation: slideIn 0.35s forwards;
-}
-
-/* Stagger animation */
-.mobile-menu.show ul li:nth-child(1) a,
-.mobile-menu.show ul li:nth-child(1) button { animation-delay: 0.05s; }
-.mobile-menu.show ul li:nth-child(2) a,
-.mobile-menu.show ul li:nth-child(2) button { animation-delay: 0.1s; }
-.mobile-menu.show ul li:nth-child(3) a,
-.mobile-menu.show ul li:nth-child(3) button { animation-delay: 0.15s; }
-.mobile-menu.show ul li:nth-child(4) a,
-.mobile-menu.show ul li:nth-child(4) button { animation-delay: 0.2s; }
-
-/* Slide-in animation keyframes */
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(30px); }
-  to { opacity: 1; transform: translateX(0); }
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(255,255,255,0.2);
 }
 
 /* ========================= MOBILE ACTION BUTTONS ========================= */
@@ -1943,13 +1933,13 @@ body {
   margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .mobile-actions a,
 .mobile-actions button {
   width: 100%;
-  padding: 12px 0;
+  padding: 10px 0;
   border-radius: 6px;
   background: #e50914;
   color: #ffffff;
@@ -1972,10 +1962,39 @@ body {
   background: #e50914;
 }
 
-/* ========================= RESPONSIVE RULES ========================= */
+/* ========================= RESPONSIVE ========================= */
 @media (max-width: 768px) {
-  .desktop-only { display: none; }
-  .hamburger { display: flex; }
+  .desktop-only {
+    display: none;
+  }
+
+  /* Hamburger on RIGHT, vertically centered */
+  .hamburger {
+    display: flex;
+    margin-left: auto;
+    align-self: center;
+  }
+
+  /* Site name left-aligned and vertically centered with hamburger */
+  .navbar-logo {
+    margin-left: 0;
+    font-size: 1.05rem;
+    white-space: nowrap;
+    flex-shrink: 0; /* prevents shrinking */
+    display: flex;
+    align-items: center; /* vertical center */
+    height: 100%;
+  }
+
+  /* Navbar flex alignment */
+  .dyptc-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* vertically center everything */
+  }
+
   .mobile-menu a:active,
-  .mobile-menu button:active { transform: scale(0.96); }
+  .mobile-menu button:active {
+    transform: scale(0.96);
+  }
 }
