@@ -716,7 +716,6 @@ body {
 }
 
 
-
 /* =====================================================
    ADD ITEM PAGE – DARK THEME
 ===================================================== */
@@ -750,7 +749,14 @@ body {
   gap: 16px;
 }
 
-/* Inputs and textarea */
+/* Form groups for spacing field-level errors */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Inputs, textarea, select */
 .add-item-form input,
 .add-item-form textarea,
 .add-item-form select {
@@ -807,7 +813,7 @@ body {
   box-shadow: none;
 }
 
-/* Success & error messages */
+/* Success & error messages (top of form) */
 .auth-msg.success {
   background-color: #0f2f0f;
   color: #22c55e;
@@ -826,6 +832,17 @@ body {
   border-radius: 6px;
   text-align: center;
   font-weight: 500;
+}
+
+/* ==========================
+   Field-level errors
+=========================== */
+.field-error {
+  color: #f87171; /* light red */
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
 }
 
 /* Fade-in animation */
@@ -858,7 +875,12 @@ body {
     font-size: 15px;
     padding: 12px;
   }
+
+  .field-error {
+    font-size: 12px;
+  }
 }
+
 
 /* ==============================
    LAYOUT WRAPPER
@@ -1345,7 +1367,7 @@ body {
   background: linear-gradient(180deg, #020617 0%, #0a0f20 100%);
   color: #e5e7eb;
   font-family: "Inter", sans-serif;
-  padding-bottom: 60px;
+  margin-bottom: -60px; /* space for footer */
 }
 
 /* =====================
@@ -1631,55 +1653,75 @@ body {
 }
 
 
-/* =========================
-   GLOBAL FIXES
-========================= */
-html,
-body {
-  overflow-x: hidden;
-}
-
-/* Lock background when mobile menu is open */
-body.menu-open {
-  overflow: hidden;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  touch-action: none;
-}
-
-/* =========================
-   NAVBAR BASE
-========================= */
+/* =====================================================
+   NAVBAR – DARK NETFLIX STYLE
+/* ========================= NAVBAR BASE ========================= */
 .dyptc-navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
+
   background: #1e1e1e;
   color: #fff;
-  position: relative;
+
+  width: 100%;
   z-index: 1000;
+
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
+
+/* ✅ DESKTOP FIXED NAVBAR (REPLACES STICKY) */
+@media (min-width: 769px) {
+  .dyptc-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+
+  /* Push page content below navbar */
+  .page-content {
+    padding-top: 70px;
+  }
+}
+
+/* Scroll effect */
+.dyptc-navbar.scrolled {
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+}
+
+
 
 .navbar-logo {
   font-weight: bold;
+  font-size: 1.3rem;
+  color: #22d3ee;
+  transition: transform 0.25s ease;
 }
 
+.navbar-logo:hover {
+  transform: scale(1.05);
+}
+
+/* Navbar links */
 .navbar-list,
 .nav-right {
   display: flex;
   gap: 1rem;
   list-style: none;
+  align-items: center;
 }
 
+/* Links/buttons base style */
 .navbar-list a,
 .navbar-list button,
 .nav-right a,
 .nav-right button {
   background: none;
   border: none;
-  color: white;
+  color: #fff;
   cursor: pointer;
   text-decoration: none;
   font-weight: 500;
@@ -1687,14 +1729,13 @@ body.menu-open {
   transition: color 0.25s ease, transform 0.25s ease;
 }
 
-/* =========================
-   DESKTOP LINK HOVER
-========================= */
+/* ========================= DESKTOP LINK HOVER ========================= */
+
 .navbar-list a:hover,
 .navbar-list button:hover,
 .nav-right a:hover,
 .nav-right button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   color: #ff4d4d;
 }
 
@@ -1715,38 +1756,40 @@ body.menu-open {
   width: 100%;
 }
 
-/* =========================
-   PRIMARY BUTTONS (DESKTOP)
-========================= */
+/* ========================= PRIMARY BUTTONS (DESKTOP) ========================= */
 .navbar-btn,
 .nav-right a,
 .nav-right button {
   padding: 0.45rem 0.9rem;
   border-radius: 6px;
-  background: #e50914;
-  color: white;
+  background: #e50914; /* original red */
+  color: #ffffff; /* keep text white */
   font-weight: 500;
-  transition: background 0.25s ease, transform 0.25s ease;
+  transition: background 0.25s ease, transform 0.25s ease, text-shadow 0.25s ease;
 }
 
 .navbar-btn:hover,
 .nav-right a:hover,
 .nav-right button:hover {
-  background: #ff1f1f;
+  background: #ff1f1f; /* brighter red */
   transform: translateY(-1px);
+  color: #ffffff; /* ensure text stays white */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); /* subtle shadow for readability */
 }
 
+/* Admin / Logout buttons */
 .nav-right .logout {
   background: #b20710;
+  color: #ffffff;
 }
 
 .nav-right .logout:hover {
   background: #e50914;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); /* subtle shadow on hover */
 }
 
-/* =========================
-   HAMBURGER
-========================= */
+/* ========================= HAMBURGER (Mobile) ========================= */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -1775,118 +1818,127 @@ body.menu-open {
   transform: rotate(-45deg) translateY(-8px);
 }
 
-/* =========================
-   MOBILE MENU OVERLAY
-========================= */
+/* ========================= MOBILE MENU OVERLAY ========================= */
 .menu-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
   z-index: 1500;
   overscroll-behavior: contain;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
-/* =========================
-   MOBILE MENU SIDEBAR
-========================= */
+.menu-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ========================= MOBILE MENU SIDEBAR ========================= */
 .mobile-menu {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  width: 260px;
+  height: 100%;
   background: #0f111a;
-  padding: 80px 24px 24px;
+  padding: 80px 20px 20px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
   transform: translateX(100%);
-  transition: transform 0.3s ease;
+  transition: transform 0.35s cubic-bezier(0.25,1,0.5,1);
   z-index: 2000;
-
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  box-shadow: -4px 0 15px rgba(0,0,0,0.5);
 }
 
 .mobile-menu.show {
   transform: translateX(0);
 }
 
-/* =========================
-   MOBILE MENU LINKS
-========================= */
+/* ========================= MOBILE MENU LINKS (ATTRACTIVE) ========================= */
 .mobile-menu ul {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px; /* smaller gap, more compact */
+  width: 100%;
 }
 
-.mobile-menu a,
-.mobile-menu button {
-  color: #e5e7eb;
-  background: none;
+.mobile-menu ul li {
+  width: 100%;
+}
+
+/* Mobile links - clickable button style */
+.mobile-menu ul li a,
+.mobile-menu ul li button {
+  color: #ffffff !important;            /* white text */
+  background: rgba(255, 255, 255, 0.05); /* subtle transparent background */
   border: none;
   font-size: 1.1rem;
   text-align: left;
   cursor: pointer;
-  position: relative;
-  opacity: 0;
-  transform: translateX(20px);
-  animation: slideIn 0.3s forwards;
-  transition: color 0.25s ease, transform 0.25s ease;
   font-weight: 500;
+  width: 100%;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;                   /* rounded edges */
+  opacity: 0;                            /* hidden initially for animation */
+  transform: translateX(20px);
+  animation: slideIn 0.35s forwards;
+  transition: all 0.25s ease;           /* smooth hover */
+  text-decoration: none !important;
+  position: relative;
 }
 
-.mobile-menu.show a,
-.mobile-menu.show button {
-  animation: slideIn 0.3s forwards;
+/* Remove underline from pseudo-elements */
+.mobile-menu ul li a::after,
+.mobile-menu ul li button::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Hover effect - more noticeable */
+.mobile-menu ul li a:hover,
+.mobile-menu ul li button:hover {
+  color: #ffffff;                        /* bright white */
+  background: rgba(255, 255, 255, 0.15); /* stronger highlight */
+  transform: scale(1.02);                /* slight zoom effect */
+  box-shadow: 0 2px 8px rgba(255,255,255,0.2); /* subtle glow */
+}
+
+/* Slide-in animation on menu show */
+.mobile-menu.show ul li a,
+.mobile-menu.show ul li button {
+  opacity: 0;
+  transform: translateX(30px);
+  animation: slideIn 0.35s forwards;
 }
 
 /* Stagger animation */
-.mobile-menu ul li:nth-child(1) a { animation-delay: 0.05s; }
-.mobile-menu ul li:nth-child(2) a { animation-delay: 0.1s; }
-.mobile-menu ul li:nth-child(3) a { animation-delay: 0.15s; }
-.mobile-menu ul li:nth-child(4) a { animation-delay: 0.2s; }
+.mobile-menu.show ul li:nth-child(1) a,
+.mobile-menu.show ul li:nth-child(1) button { animation-delay: 0.05s; }
+.mobile-menu.show ul li:nth-child(2) a,
+.mobile-menu.show ul li:nth-child(2) button { animation-delay: 0.1s; }
+.mobile-menu.show ul li:nth-child(3) a,
+.mobile-menu.show ul li:nth-child(3) button { animation-delay: 0.15s; }
+.mobile-menu.show ul li:nth-child(4) a,
+.mobile-menu.show ul li:nth-child(4) button { animation-delay: 0.2s; }
 
+/* Slide-in animation keyframes */
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-/* Hover effects */
-.mobile-menu a::after,
-.mobile-menu button::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -4px;
-  width: 0;
-  height: 2px;
-  background: #ff4d4d;
-  transition: width 0.3s ease;
-}
-
-.mobile-menu a:hover,
-.mobile-menu button:hover {
-  color: #ff4d4d;
-  transform: translateX(4px);
-}
-
-.mobile-menu a:hover::after,
-.mobile-menu button:hover::after {
-  width: 100%;
-}
-
-/* =========================
-   MOBILE ACTION BUTTONS
-========================= */
+/* ========================= MOBILE ACTION BUTTONS ========================= */
 .mobile-actions {
   margin-top: auto;
   display: flex;
@@ -1920,20 +1972,10 @@ body.menu-open {
   background: #e50914;
 }
 
-/* =========================
-   RESPONSIVE RULES
-========================= */
+/* ========================= RESPONSIVE RULES ========================= */
 @media (max-width: 768px) {
-  .desktop-only {
-    display: none;
-  }
-
-  .hamburger {
-    display: flex;
-  }
-
+  .desktop-only { display: none; }
+  .hamburger { display: flex; }
   .mobile-menu a:active,
-  .mobile-menu button:active {
-    transform: scale(0.96);
-  }
+  .mobile-menu button:active { transform: scale(0.96); }
 }

@@ -10,7 +10,9 @@ export default function AddItem() {
   const [loading, setLoading] = useState(false);
   const [loggedUser, setLoggedUser] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  
+  // ✅ Track field-level errors
+  const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     name: "",
@@ -33,46 +35,65 @@ export default function AddItem() {
 
   const sanitize = (v) => v.replace(/[<>]/g, "");
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: sanitize(e.target.value) });
+  const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
+
+  // ✅ Validate fields and update error state as user types
+  const validateField = (name, value) => {
+    let error = "";
+    const val = value.trim();
+
+    if (!val) {
+      error = "This field is required";
+    } else {
+      if (name === "name" && val.length < 3) {
+        error = "Item name must be at least 3 characters";
+      }
+      if (name === "description" && val.length < 10) {
+        error = "Description must be at least 10 characters";
+      }
+      if (name === "contact" && !isValidEmail(val)) {
+        error = "Enter a valid email";
+      }
+    }
+
+    setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: sanitize(value) });
+
+    // ✅ Validate on change
+    validateField(name, value);
+    setSuccessMessage("");
+  };
+
+  const isFormValid = () => {
+    return (
+      formData.name.trim().length >= 3 &&
+      formData.description.trim().length >= 10 &&
+      formData.location.trim() !== "" &&
+      isValidEmail(formData.contact) &&
+      Object.values(errors).every((e) => e === "")
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!loggedUser) return;
 
+    // ✅ Run validation for all fields before submit
+    Object.keys(formData).forEach((field) => {
+      validateField(field, formData[field]);
+    });
+
+    if (!isFormValid()) return;
+
     setLoading(true);
-    setErrorMessage("");
-    setSuccessMessage("");
-
-    if (formData.name.length < 3) {
-      setErrorMessage("Item name must be at least 3 characters");
-      setLoading(false);
-      return;
-    }
-
-    if (formData.description.length < 10) {
-      setErrorMessage("Description must be at least 10 characters");
-      setLoading(false);
-      return;
-    }
-
-    if (!isValidEmail(formData.contact)) {
-      setErrorMessage("Enter a valid email");
-      setLoading(false);
-      return;
-    }
-
     try {
       await addDoc(collection(db, "reports"), {
-        name: formData.name,
-        description: formData.description,
-        location: formData.location,
-        contact: formData.contact,
-        category: formData.category,
-        reportBy: loggedUser, // ✅ MATCHED NAME
+        ...formData,
+        reportBy: loggedUser,
         status: "pending",
         createdAt: new Date(),
       });
@@ -84,12 +105,12 @@ export default function AddItem() {
         contact: "",
         category: "lost",
       });
-
+      setErrors({});
       setSuccessMessage("Report submitted successfully!");
       setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       console.error(err);
-      setErrorMessage("Failed to submit report");
+      setErrors({ submit: "Failed to submit report" });
     } finally {
       setLoading(false);
     }
@@ -99,21 +120,62 @@ export default function AddItem() {
     <div className="add-item-container">
       <h2>Report Lost / Found Item</h2>
 
-      {errorMessage && <p className="auth-msg error">{errorMessage}</p>}
+      {errors.submit && <p className="auth-msg error">{errors.submit}</p>}
       {successMessage && <p className="auth-msg success">{successMessage}</p>}
 
       <form onSubmit={handleSubmit} className="add-item-form">
-        <input name="name" placeholder="Item Name" value={formData.name} onChange={handleChange} />
-        <textarea name="description" placeholder="Description" value={formData.description} onChange={handleChange} />
-        <input name="location" placeholder="Location" value={formData.location} onChange={handleChange} />
-        <input name="contact" placeholder="Contact Email" value={formData.contact} onChange={handleChange} />
+        <div className="form-group">
+          <input
+            name="name"
+            placeholder="Item Name"
+            value={formData.name}
+            onChange={handleChange}
+          />
+          {errors.name && <p className="field-error">{errors.name}</p>}
+        </div>
 
-        <select name="category" value={formData.category} onChange={handleChange}>
-          <option value="lost">Lost</option>
-          <option value="found">Found</option>
-        </select>
+        <div className="form-group">
+          <textarea
+            name="description"
+            placeholder="Description"
+            value={formData.description}
+            onChange={handleChange}
+          />
+          {errors.description && <p className="field-error">{errors.description}</p>}
+        </div>
 
-        <button disabled={loading}>
+        <div className="form-group">
+          <input
+            name="location"
+            placeholder="Location"
+            value={formData.location}
+            onChange={handleChange}
+          />
+          {errors.location && <p className="field-error">{errors.location}</p>}
+        </div>
+
+        <div className="form-group">
+          <input
+            name="contact"
+            placeholder="Contact Email"
+            value={formData.contact}
+            onChange={handleChange}
+          />
+          {errors.contact && <p className="field-error">{errors.contact}</p>}
+        </div>
+
+        <div className="form-group">
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+          >
+            <option value="lost">Lost</option>
+            <option value="found">Found</option>
+          </select>
+        </div>
+
+        <button disabled={loading || !isFormValid()}>
           {loading ? "Submitting..." : "Submit"}
         </button>
       </form>

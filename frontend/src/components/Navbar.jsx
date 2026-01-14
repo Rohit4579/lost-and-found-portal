@@ -18,7 +18,6 @@ export default function Navbar() {
     const checkAdmin = () => {
       setAdminLogged(localStorage.getItem("admin") === "true");
     };
-
     checkAdmin();
     window.addEventListener("storage", checkAdmin);
     return () => window.removeEventListener("storage", checkAdmin);
@@ -33,16 +32,36 @@ export default function Navbar() {
     return unsub;
   }, []);
 
-  /* 📱 LOCK BODY SCROLL */
+  /* 📱 LOCK BODY SCROLL (MOBILE SAFE) */
   useEffect(() => {
     if (menuOpen) {
-      document.body.classList.add("menu-open");
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.classList.remove("menu-open");
+      document.body.style.overflow = "";
     }
-
-    return () => document.body.classList.remove("menu-open");
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [menuOpen]);
+
+  /* 🧭 DESKTOP SCROLL EFFECT (ONLY DESKTOP) */
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerWidth < 769) return; // 🚫 mobile ignored
+
+      const navbar = document.querySelector(".dyptc-navbar");
+      if (!navbar) return;
+
+      if (window.scrollY > 20) {
+        navbar.classList.add("scrolled");
+      } else {
+        navbar.classList.remove("scrolled");
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   /* 🚨 Guard report */
   const handleReportClick = () => {
@@ -75,27 +94,27 @@ export default function Navbar() {
 
   return (
     <nav className="dyptc-navbar">
-      <div className="navbar-logo">D.Y.P.T.C Lost & Found Portal</div>
+      <div className="navbar-logo">
+        <Link to="/" style={{ color: "inherit", textDecoration: "none" }}>
+          D.Y.P.T.C Lost & Found Portal
+        </Link>
+      </div>
 
-      {/* DESKTOP NAV */}
       <ul className="navbar-list desktop-only">
         <li><Link to="/">Home</Link></li>
         <li><Link to="/about">About</Link></li>
         <li><button onClick={handleReportClick}>Report</button></li>
-
         {adminLogged && (
           <li><Link to="/admin-dashboard">Admin Dashboard</Link></li>
         )}
       </ul>
 
-      {/* DESKTOP ACTIONS */}
       <div className="nav-right desktop-only">
         {!adminLogged ? (
           <Link to="/admin-login">Admin</Link>
         ) : (
           <button className="logout" onClick={logoutAdmin}>Admin Logout</button>
         )}
-
         {user ? (
           <button className="logout" onClick={logoutUser}>Logout</button>
         ) : (
@@ -103,7 +122,6 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* 🍔 HAMBURGER */}
       <button
         className={`hamburger ${menuOpen ? "open" : ""}`}
         onClick={() => setMenuOpen(!menuOpen)}
@@ -114,18 +132,15 @@ export default function Navbar() {
         <span />
       </button>
 
-      {/* OVERLAY */}
       {menuOpen && (
         <div className="menu-overlay" onClick={() => setMenuOpen(false)} />
       )}
 
-      {/* 📱 MOBILE MENU */}
       <aside className={`mobile-menu ${menuOpen ? "show" : ""}`}>
         <ul>
           <li><Link to="/" onClick={() => setMenuOpen(false)}>Home</Link></li>
           <li><Link to="/about" onClick={() => setMenuOpen(false)}>About</Link></li>
           <li><button onClick={handleReportClick}>Report</button></li>
-
           {adminLogged && (
             <li>
               <Link to="/admin-dashboard" onClick={() => setMenuOpen(false)}>
@@ -141,7 +156,6 @@ export default function Navbar() {
           ) : (
             <button className="logout" onClick={logoutAdmin}>Admin Logout</button>
           )}
-
           {user ? (
             <button className="logout" onClick={logoutUser}>Logout</button>
           ) : (
