@@ -14,13 +14,19 @@ export default function Layout() {
     document.body.style.transition = "background-color 0.3s, color 0.3s";
   }, []);
 
+  // ❌ Routes where footer should be hidden
+  const hideFooterRoutes = ["/login", "/add"];
+  const hideFooter = hideFooterRoutes.includes(location.pathname);
+
   return (
     <div className="layout-wrapper">
       <Navbar />
       <main className="page-content">
-        <Outlet /> {/* This renders nested pages like Home, About, AddItem */}
+        <Outlet />
       </main>
-      <Footer />
+
+      {/* Footer hidden on Login & Report pages */}
+      {!hideFooter && <Footer />}
     </div>
   );
 }

@@ -33,6 +33,17 @@ export default function Navbar() {
     return unsub;
   }, []);
 
+  /* 📱 LOCK BODY SCROLL */
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.classList.add("menu-open");
+    } else {
+      document.body.classList.remove("menu-open");
+    }
+
+    return () => document.body.classList.remove("menu-open");
+  }, [menuOpen]);
+
   /* 🚨 Guard report */
   const handleReportClick = () => {
     if (!user) {
@@ -52,10 +63,10 @@ export default function Navbar() {
     navigate("/");
   };
 
-  /* 🔐 Admin logout (FIXED) */
+  /* 🔐 Admin logout */
   const logoutAdmin = () => {
     localStorage.removeItem("admin");
-    setAdminLogged(false); // 🔥 THIS IS THE FIX
+    setAdminLogged(false);
     setMenuOpen(false);
     navigate("/admin-login");
   };
@@ -64,7 +75,7 @@ export default function Navbar() {
 
   return (
     <nav className="dyptc-navbar">
-      <div className="navbar-logo">D.Y.P.T.C Lost & Found</div>
+      <div className="navbar-logo">D.Y.P.T.C Lost & Found Portal</div>
 
       {/* DESKTOP NAV */}
       <ul className="navbar-list desktop-only">
@@ -73,9 +84,7 @@ export default function Navbar() {
         <li><button onClick={handleReportClick}>Report</button></li>
 
         {adminLogged && (
-          <li>
-            <Link to="/admin-dashboard">Admin Dashboard</Link>
-          </li>
+          <li><Link to="/admin-dashboard">Admin Dashboard</Link></li>
         )}
       </ul>
 
@@ -84,15 +93,11 @@ export default function Navbar() {
         {!adminLogged ? (
           <Link to="/admin-login">Admin</Link>
         ) : (
-          <button className="logout" onClick={logoutAdmin}>
-            Admin Logout
-          </button>
+          <button className="logout" onClick={logoutAdmin}>Admin Logout</button>
         )}
 
         {user ? (
-          <button className="logout" onClick={logoutUser}>
-            Logout
-          </button>
+          <button className="logout" onClick={logoutUser}>Logout</button>
         ) : (
           <Link to="/login">Login</Link>
         )}
@@ -111,10 +116,7 @@ export default function Navbar() {
 
       {/* OVERLAY */}
       {menuOpen && (
-        <div
-          className="menu-overlay"
-          onClick={() => setMenuOpen(false)}
-        />
+        <div className="menu-overlay" onClick={() => setMenuOpen(false)} />
       )}
 
       {/* 📱 MOBILE MENU */}
@@ -126,10 +128,7 @@ export default function Navbar() {
 
           {adminLogged && (
             <li>
-              <Link
-                to="/admin-dashboard"
-                onClick={() => setMenuOpen(false)}
-              >
+              <Link to="/admin-dashboard" onClick={() => setMenuOpen(false)}>
                 Admin Dashboard
               </Link>
             </li>
@@ -138,23 +137,15 @@ export default function Navbar() {
 
         <div className="mobile-actions">
           {!adminLogged ? (
-            <Link to="/admin-login" onClick={() => setMenuOpen(false)}>
-              Admin
-            </Link>
+            <Link to="/admin-login" onClick={() => setMenuOpen(false)}>Admin</Link>
           ) : (
-            <button className="logout" onClick={logoutAdmin}>
-              Admin Logout
-            </button>
+            <button className="logout" onClick={logoutAdmin}>Admin Logout</button>
           )}
 
           {user ? (
-            <button className="logout" onClick={logoutUser}>
-              Logout
-            </button>
+            <button className="logout" onClick={logoutUser}>Logout</button>
           ) : (
-            <Link to="/login" onClick={() => setMenuOpen(false)}>
-              Login
-            </Link>
+            <Link to="/login" onClick={() => setMenuOpen(false)}>Login</Link>
           )}
         </div>
       </aside>

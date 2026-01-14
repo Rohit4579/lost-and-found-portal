@@ -1,7 +1,6 @@
-// src/pages/AdminDashboard.jsx
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
@@ -33,16 +32,11 @@ export default function AdminDashboard() {
     fetchReports();
   }, []);
 
-  // 🔄 Resolve report
+  // Resolve report
   const updateStatus = async (id) => {
     try {
-      // Firestore reference
       const reportRef = doc(db, "reports", id);
-
-      // Update status in Firestore
       await updateDoc(reportRef, { status: "resolved" });
-
-      // Update local state immediately
       setReports((prev) =>
         prev.map((r) => (r.id === id ? { ...r, status: "resolved" } : r))
       );
@@ -52,8 +46,21 @@ export default function AdminDashboard() {
     }
   };
 
-  if (loading)
-    return <p style={{ textAlign: "center" }}>Loading reports...</p>;
+  // Delete report
+  const deleteReport = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this report?")) return;
+
+    try {
+      const reportRef = doc(db, "reports", id);
+      await deleteDoc(reportRef);
+      setReports((prev) => prev.filter((r) => r.id !== id));
+    } catch (err) {
+      console.error("Error deleting report:", err);
+      alert("Failed to delete report. Check console.");
+    }
+  };
+
+  if (loading) return <p>Loading reports...</p>;
 
   return (
     <div className="admin-dashboard">
@@ -89,13 +96,14 @@ export default function AdminDashboard() {
                   </span>
                 </td>
                 <td data-label="Action">
-                  {r.status !== "resolved" ? (
-                    <button onClick={() => updateStatus(r.id)}>
-                      Resolve
+                  <div className="action-buttons">
+                    {r.status !== "resolved" && (
+                      <button onClick={() => updateStatus(r.id)}>Resolve</button>
+                    )}
+                    <button className="delete-btn" onClick={() => deleteReport(r.id)}>
+                      Delete
                     </button>
-                  ) : (
-                    <span>Resolved</span>
-                  )}
+                  </div>
                 </td>
               </tr>
             ))}
