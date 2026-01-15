@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
@@ -32,22 +31,31 @@ export default function Navbar() {
     return unsub;
   }, []);
 
-  /* 📱 LOCK BODY SCROLL (MOBILE SAFE) */
+  /* 📱 MOBILE SAFE SCROLL LOCK (NO GLITCH) */
   useEffect(() => {
+    if (window.innerWidth > 768) return;
+
     if (menuOpen) {
-      document.body.style.overflow = "hidden";
+      const scrollY = window.scrollY;
+
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
     } else {
-      document.body.style.overflow = "";
+      const scrollY = document.body.style.top;
+
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+
+      window.scrollTo(0, parseInt(scrollY || "0") * -1);
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
   }, [menuOpen]);
 
-  /* 🧭 DESKTOP SCROLL EFFECT (ONLY DESKTOP) */
+  /* 🧭 DESKTOP SCROLL EFFECT ONLY */
   useEffect(() => {
     const handleScroll = () => {
-      if (window.innerWidth < 769) return; // 🚫 mobile ignored
+      if (window.innerWidth < 769) return;
 
       const navbar = document.querySelector(".dyptc-navbar");
       if (!navbar) return;
@@ -100,6 +108,7 @@ export default function Navbar() {
         </Link>
       </div>
 
+      {/* ===== Desktop Nav ===== */}
       <ul className="navbar-list desktop-only">
         <li><Link to="/">Home</Link></li>
         <li><Link to="/about">About</Link></li>
@@ -113,7 +122,9 @@ export default function Navbar() {
         {!adminLogged ? (
           <Link to="/admin-login">Admin</Link>
         ) : (
-          <button className="logout" onClick={logoutAdmin}>Admin Logout</button>
+          <button className="logout" onClick={logoutAdmin}>
+            Admin Logout
+          </button>
         )}
         {user ? (
           <button className="logout" onClick={logoutUser}>Logout</button>
@@ -122,6 +133,7 @@ export default function Navbar() {
         )}
       </div>
 
+      {/* ===== Hamburger ===== */}
       <button
         className={`hamburger ${menuOpen ? "open" : ""}`}
         onClick={() => setMenuOpen(!menuOpen)}
@@ -132,18 +144,27 @@ export default function Navbar() {
         <span />
       </button>
 
+      {/* ===== Overlay ===== */}
       {menuOpen && (
-        <div className="menu-overlay" onClick={() => setMenuOpen(false)} />
+        <div
+          className="menu-overlay show"
+          onClick={() => setMenuOpen(false)}
+        />
       )}
 
+      {/* ===== Mobile Menu ===== */}
       <aside className={`mobile-menu ${menuOpen ? "show" : ""}`}>
         <ul>
           <li><Link to="/" onClick={() => setMenuOpen(false)}>Home</Link></li>
           <li><Link to="/about" onClick={() => setMenuOpen(false)}>About</Link></li>
           <li><button onClick={handleReportClick}>Report</button></li>
+
           {adminLogged && (
             <li>
-              <Link to="/admin-dashboard" onClick={() => setMenuOpen(false)}>
+              <Link
+                to="/admin-dashboard"
+                onClick={() => setMenuOpen(false)}
+              >
                 Admin Dashboard
               </Link>
             </li>
@@ -152,14 +173,23 @@ export default function Navbar() {
 
         <div className="mobile-actions">
           {!adminLogged ? (
-            <Link to="/admin-login" onClick={() => setMenuOpen(false)}>Admin</Link>
+            <Link to="/admin-login" onClick={() => setMenuOpen(false)}>
+              Admin
+            </Link>
           ) : (
-            <button className="logout" onClick={logoutAdmin}>Admin Logout</button>
+            <button className="logout" onClick={logoutAdmin}>
+              Admin Logout
+            </button>
           )}
+
           {user ? (
-            <button className="logout" onClick={logoutUser}>Logout</button>
+            <button className="logout" onClick={logoutUser}>
+              Logout
+            </button>
           ) : (
-            <Link to="/login" onClick={() => setMenuOpen(false)}>Login</Link>
+            <Link to="/login" onClick={() => setMenuOpen(false)}>
+              Login
+            </Link>
           )}
         </div>
       </aside>

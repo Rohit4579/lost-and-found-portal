@@ -4,7 +4,7 @@ import { auth, db } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut
+  signOut,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import "../index.css";
@@ -97,48 +97,94 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-container">
-      <h2 className="auth-title">{isSignup ? "Create Account" : "Login"}</h2>
+    <div className="auth-page">
+      <div className="auth-container">
+        <h2 className="auth-title">
+          {isSignup ? "Create Account" : "Login"}
+        </h2>
 
-      {message.text && (
-        <p className={`auth-msg ${message.type}`}>{message.text}</p>
-      )}
-
-      <form onSubmit={handleSubmit} className="auth-form">
-        {isSignup && (
-          <>
-            <input type="text" name="firstname" placeholder="First Name" value={formData.firstname} onChange={handleChange} required />
-            <input type="text" name="lastname" placeholder="Last Name" value={formData.lastname} onChange={handleChange} required />
-            <input type="text" name="username" placeholder="Username" value={formData.username} onChange={handleChange} required />
-            <input type="tel" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} required />
-          </>
+        {message.text && (
+          <p className={`auth-msg ${message.type}`}>{message.text}</p>
         )}
 
-        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
+        <form onSubmit={handleSubmit} className="auth-form">
+          {isSignup && (
+            <>
+              <input
+                type="text"
+                name="firstname"
+                placeholder="First Name"
+                value={formData.firstname}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="text"
+                name="lastname"
+                placeholder="Last Name"
+                value={formData.lastname}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="tel"
+                name="phone"
+                placeholder="Phone Number"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+              />
+            </>
+          )}
 
-        <button type="submit" className="auth-btn" disabled={loading}>
-          {loading
-            ? isSignup
-              ? "Signing Up..."
-              : "Logging In..."
-            : isSignup
-            ? "Sign Up"
-            : "Login"}
-        </button>
-      </form>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
 
-      <p
-        className="toggle-auth"
-        onClick={() => {
-          setIsSignup(!isSignup);
-          resetForm();
-        }}
-      >
-        {isSignup
-          ? "Already have an account? Login"
-          : "Don't have an account? Sign Up"}
-      </p>
+          <button type="submit" className="auth-btn" disabled={loading}>
+            {loading
+              ? isSignup
+                ? "Signing Up..."
+                : "Logging In..."
+              : isSignup
+              ? "Sign Up"
+              : "Login"}
+          </button>
+        </form>
+
+        <p
+          className="toggle-auth"
+          onClick={() => {
+            setIsSignup(!isSignup);
+            resetForm();
+          }}
+        >
+          {isSignup
+            ? "Already have an account? Login"
+            : "Don't have an account? Sign Up"}
+        </p>
+      </div>
     </div>
   );
 }

@@ -263,14 +263,36 @@ body {
     gap: 8px;
   }
 }
-
 /* =========================================================
    AUTH LOGIN / SIGNUP PAGE – DARK NETFLIX-LIKE THEME
 ===================================================== */
+
+/* =========================
+   AUTH PAGE WRAPPER (LAYOUT)
+========================= */
+.auth-page {
+  padding-top: 70px; /* navbar height for desktop */
+}
+
+/* Mobile & tablet centering */
+@media (max-width: 768px) {
+  .auth-page {
+    min-height: calc(100svh - 70px); /* safe viewport height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+}
+
+/* =========================
+   AUTH CONTAINER (CARD)
+========================= */
 .auth-container {
   width: 100%;
   max-width: 400px;
-  margin: 60px auto;
+  margin: 60px auto; /* desktop spacing only */
   padding: 36px 32px;
   background: #11131a;
   border-radius: 14px;
@@ -278,10 +300,12 @@ body {
   color: #e5e7eb;
   font-family: "Inter", sans-serif;
   animation: fadeIn 0.4s ease-in-out;
+  box-sizing: border-box;
 }
 
-
-
+/* =========================
+   TITLES
+========================= */
 .auth-title {
   text-align: center;
   font-size: 28px;
@@ -290,6 +314,9 @@ body {
   color: #22d3ee;
 }
 
+/* =========================
+   FORM
+========================= */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -306,7 +333,7 @@ body {
   color: #e5e7eb;
   outline: none;
   transition: all 0.25s ease;
-  box-sizing: border-box; /* ensures no overflow */
+  box-sizing: border-box;
 }
 
 .auth-form input:focus {
@@ -315,6 +342,9 @@ body {
   background-color: #1f2232;
 }
 
+/* =========================
+   BUTTON
+========================= */
 .auth-btn {
   width: 100%;
   padding: 14px;
@@ -343,6 +373,9 @@ body {
   box-shadow: none;
 }
 
+/* =========================
+   MESSAGES
+========================= */
 .auth-msg.success {
   background-color: #0f2f0f;
   color: #22c55e;
@@ -363,6 +396,9 @@ body {
   font-weight: 500;
 }
 
+/* =========================
+   TOGGLE TEXT
+========================= */
 .toggle-auth {
   text-align: center;
   margin-top: 16px;
@@ -379,40 +415,49 @@ body {
 }
 
 /* =========================
-   MOBILE RESPONSIVE – USER LOGIN / SIGNUP
+   MOBILE RESPONSIVE (PHONES)
 ========================= */
 @media (max-width: 480px) {
-  /* Container adjustments */
   .auth-container {
-    margin: 20px auto;        /* reduce top/bottom margin */
-    padding: 28px 20px;       /* slightly smaller padding */
-    max-width: 100%;          /* full width minus padding */
-    box-sizing: border-box;   /* ensure it doesn't overflow */
+    margin: 0; /* 🔥 important: flex centering */
+    padding: 28px 20px;
+    max-width: 100%;
   }
 
-  /* Title smaller on mobile */
   .auth-title {
-    font-size: 22px;          /* smaller title */
+    font-size: 22px;
     margin-bottom: 18px;
   }
 
-  /* Inputs smaller */
   .auth-form input {
     font-size: 14px;
     padding: 12px 14px;
   }
 
-  /* Button smaller */
   .auth-btn {
     font-size: 15px;
     padding: 12px;
   }
 
-  /* Toggle text smaller */
   .toggle-auth {
     font-size: 14px;
   }
 }
+
+/* =========================
+   ANIMATION
+========================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 
 /* =========================================================
@@ -1698,8 +1743,9 @@ body {
     display: none;
   }
 }
+
 /* =====================================================
-   NAVBAR – DARK NETFLIX STYLE
+   NAVBAR – DARK NETFLIX STYLE (FINAL, MOBILE SAFE)
 ===================================================== */
 
 /* ========================= NAVBAR BASE ========================= */
@@ -1715,10 +1761,15 @@ body {
   top: 0;
   left: 0;
   z-index: 4000;
+
+  /* 🔧 Prevent mobile flicker */
+  will-change: transform;
+  transform: translateZ(0);
+
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Push page content below navbar (desktop + mobile) */
+/* Push page content below navbar */
 .page-content {
   padding-top: 70px;
 }
@@ -1812,11 +1863,11 @@ body {
   background: #e50914;
 }
 
-/* ========================= HAMBURGER (MOBILE) ========================= */
+/* ========================= HAMBURGER ========================= */
 .hamburger {
   display: none;
   flex-direction: column;
-  justify-content: center; /* vertically center lines */
+  justify-content: center;
   gap: 5px;
   width: 28px;
   height: 24px;
@@ -1862,29 +1913,41 @@ body {
   pointer-events: auto;
 }
 
-/* ========================= MOBILE MENU (RIGHT SIDE DRAWER) ========================= */
+/* ========================= MOBILE MENU ========================= */
 .mobile-menu {
   position: fixed;
   top: 0;
-  right: 0; /* menu opens from right */
-  left: auto;
-  width: 220px; /* smaller menu width */
-  height: 100%;
+  right: 0;
+  width: 220px;
+
+  /* 🔥 FULL HEIGHT FIX */
+  height: 100svh;
+
   background: #0f111a;
-  padding: 70px 15px 20px;
+
+  /* Navbar height + notch safe */
+  padding-top: calc(70px + env(safe-area-inset-top));
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 20px;
+
   display: flex;
   flex-direction: column;
   gap: 20px;
-  transform: translateX(100%); /* hidden by default */
-  transition: transform 0.35s cubic-bezier(0.25,1,0.5,1);
+
+  transform: translate3d(100%, 0, 0);
+  will-change: transform;
+  transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+
   z-index: 3500;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  box-shadow: -4px 0 15px rgba(0,0,0,0.5);
+
+  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.5);
 }
 
 .mobile-menu.show {
-  transform: translateX(0);
+  transform: translate3d(0, 0, 0);
 }
 
 /* ========================= MOBILE MENU LINKS ========================= */
@@ -1924,7 +1987,7 @@ body {
 .mobile-menu ul li button:hover {
   background: rgba(255, 255, 255, 0.15);
   transform: scale(1.02);
-  box-shadow: 0 2px 8px rgba(255,255,255,0.2);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
 }
 
 /* ========================= MOBILE ACTION BUTTONS ========================= */
@@ -1967,29 +2030,22 @@ body {
     display: none;
   }
 
-  /* Hamburger on RIGHT, vertically centered */
   .hamburger {
     display: flex;
     margin-left: auto;
     align-self: center;
   }
 
-  /* Site name left-aligned and vertically centered with hamburger */
   .navbar-logo {
-    margin-left: 0;
     font-size: 1.05rem;
     white-space: nowrap;
-    flex-shrink: 0; /* prevents shrinking */
     display: flex;
-    align-items: center; /* vertical center */
+    align-items: center;
     height: 100%;
   }
 
-  /* Navbar flex alignment */
   .dyptc-navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* vertically center everything */
+    align-items: center;
   }
 
   .mobile-menu a:active,
