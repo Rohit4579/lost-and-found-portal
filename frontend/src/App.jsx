@@ -12,6 +12,7 @@ import Login from "./pages/Login.jsx";
 import AdminLogin from "./pages/AdminLogin.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 
+
 export default function App() {
   return (
     <Routes>
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/add" element={<AddItem />} />
         <Route path="/login" element={<Login />} />
+
       </Route>
 
       {/* ---------- ADMIN PAGES (Navbar only) ---------- */}

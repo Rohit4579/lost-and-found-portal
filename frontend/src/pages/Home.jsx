@@ -1,9 +1,22 @@
-// src/pages/Home.jsx
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { db, auth } from "../firebase";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+
+/* Time Ago Helper */
+const timeAgo = (timestamp) => {
+  if (!timestamp) return "—";
+  const time = timestamp.toDate();
+  const now = new Date();
+  const diff = Math.floor((now - time) / 1000);
+
+  if (diff < 10) return "just now";
+  if (diff < 60) return `${diff} sec ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} hrs ago`;
+  return `${Math.floor(diff / 86400)} days ago`;
+};
 
 export default function Home() {
   const navigate = useNavigate();
@@ -17,12 +30,19 @@ export default function Home() {
 
   const statCardsRef = useRef([]);
 
-  /* 🔐 Auth */
+  /* Modal States */
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalImage, setModalImage] = useState("");
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalLocation, setModalLocation] = useState("");
+  const [modalEmail, setModalEmail] = useState("");
+
+  /* Auth */
   useEffect(() => {
     return onAuthStateChanged(auth, setUser);
   }, []);
 
-  /* 🔴 Realtime Firestore */
+  /* Firestore realtime */
   useEffect(() => {
     const q = query(collection(db, "reports"), orderBy("createdAt", "desc"));
 
@@ -39,7 +59,6 @@ export default function Home() {
 
       setStats({ lost, found, total: data.length });
 
-      // Trigger pulse animation on update
       statCardsRef.current.forEach((card) => {
         if (card) {
           card.classList.add("pulse");
@@ -49,7 +68,7 @@ export default function Home() {
     });
   }, []);
 
-  /* 🔍 Filter logic */
+  /* Filter */
   const filteredReports = useMemo(() => {
     return reports.filter((item) => {
       const q = search.toLowerCase();
@@ -58,10 +77,43 @@ export default function Home() {
         item.location?.toLowerCase().includes(q);
 
       const matchCategory = filter === "all" || item.category === filter;
-
       return matchText && matchCategory;
     });
   }, [reports, search, filter]);
+
+  /* Modal handlers */
+  const openModal = (img, title, location, email) => {
+    setModalImage(img);
+    setModalTitle(title);
+    setModalLocation(location);
+    setModalEmail(email);
+    setModalOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    document.body.style.overflow = "auto";
+  };
+
+  /* Share */
+  const shareReport = async (item) => {
+    const url = window.location.origin;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: item.name,
+          text: `Lost & Found Report: ${item.name} at ${item.location}`,
+          url,
+        });
+      } else {
+        await navigator.clipboard.writeText(url);
+        alert("Homepage link copied!");
+      }
+    } catch (err) {
+      console.log("Share failed:", err);
+    }
+  };
 
   const handleReportClick = () => {
     if (!user) return navigate("/login");
@@ -72,7 +124,7 @@ export default function Home() {
   const foundPercent = stats.total ? (stats.found / stats.total) * 100 : 0;
 
   return (
-    <div className="home-container">
+    <div className={`home-container ${modalOpen ? "blur-bg" : ""}`}>
       <div className="home-inner">
         {/* HERO */}
         <section className="home-hero">
@@ -89,27 +141,21 @@ export default function Home() {
               className="stat-card lost"
               ref={(el) => (statCardsRef.current[0] = el)}
             >
-              <h2 style={{ opacity: stats.lost === 0 ? 0.4 : 1 }}>
-                {stats.lost || "—"}
-              </h2>
+              <h2>{stats.lost || "—"}</h2>
               <p>Lost Items</p>
             </div>
             <div
               className="stat-card found"
               ref={(el) => (statCardsRef.current[1] = el)}
             >
-              <h2 style={{ opacity: stats.found === 0 ? 0.4 : 1 }}>
-                {stats.found || "—"}
-              </h2>
+              <h2>{stats.found || "—"}</h2>
               <p>Found Items</p>
             </div>
             <div
               className="stat-card total"
               ref={(el) => (statCardsRef.current[2] = el)}
             >
-              <h2 style={{ opacity: stats.total === 0 ? 0.4 : 1 }}>
-                {stats.total || "—"}
-              </h2>
+              <h2>{stats.total || "—"}</h2>
               <p>Total Reports</p>
             </div>
           </div>
@@ -134,16 +180,10 @@ export default function Home() {
         <section className="home-search">
           <input
             placeholder="Search item or location..."
-            aria-label="Search reports"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            aria-label="Filter reports"
-          >
+          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
             <option value="all">All</option>
             <option value="lost">Lost</option>
             <option value="found">Found</option>
@@ -155,19 +195,43 @@ export default function Home() {
           <h3>Live Reports</h3>
 
           <div className="activity-list">
-            {filteredReports.length === 0 && (
-              <p className="activity-empty">No matching reports</p>
-            )}
-
             {filteredReports.slice(0, 8).map((item) => (
               <div key={item.id} className="activity-item">
-                <span className={`badge ${item.category}`}>
-                  {item.category}
-                </span>
-                <div>
+                {/* IMAGE + BADGE */}
+                <div
+                  className="activity-image"
+                  onClick={() =>
+                    openModal(
+                      item.imageUrl,
+                      item.name,
+                      item.location,
+                      item.reporterEmail,
+                    )
+                  }
+                >
+                  {/* BADGE OVER IMAGE */}
+                  <span className={`badge ${item.category}`}>
+                    {item.category}
+                  </span>
+
+                  {item.imageUrl ? (
+                    <img src={item.imageUrl} alt={item.name} />
+                  ) : (
+                    <div className="image-placeholder">📦</div>
+                  )}
+                </div>
+
+                {/* CONTENT */}
+                <div className="activity-content">
                   <strong>{item.name}</strong>
                   <p>{item.location}</p>
+                  <p className="time">{timeAgo(item.createdAt)}</p>
                 </div>
+
+                {/* SHARE */}
+                <button className="share-btn" onClick={() => shareReport(item)}>
+                  🔗 Share
+                </button>
               </div>
             ))}
           </div>
@@ -180,6 +244,29 @@ export default function Home() {
           </button>
         </section>
       </div>
+
+      {/* MODAL */}
+      {modalOpen && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={closeModal}>
+              ✕
+            </button>
+
+            <div className="modal-img-wrap">
+              <img src={modalImage} alt="Preview" />
+            </div>
+
+            <div className="modal-info">
+              <h2>{modalTitle}</h2>
+              <p>{modalLocation}</p>
+              <p>
+                <strong>Reporter:</strong> {modalEmail || "Not provided"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

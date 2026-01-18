@@ -7,25 +7,25 @@ import Footer from "./Footer.jsx";
 export default function Layout() {
   const location = useLocation();
 
-  // Apply theme
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
     document.body.classList.toggle("dark", savedTheme === "dark");
     document.body.style.transition = "background-color 0.3s, color 0.3s";
   }, []);
 
-  // ❌ Routes where footer should be hidden
+  // Footer hidden only on these routes
   const hideFooterRoutes = ["/login", "/add"];
   const hideFooter = hideFooterRoutes.includes(location.pathname);
 
   return (
     <div className="layout-wrapper">
       <Navbar />
+
+      {/* 🔥 MAIN MUST FLEX */}
       <main className="page-content">
         <Outlet />
       </main>
 
-      {/* Footer hidden on Login & Report pages */}
       {!hideFooter && <Footer />}
     </div>
   );
