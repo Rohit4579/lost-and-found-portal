@@ -13,6 +13,17 @@ import AdminLogin from "./pages/AdminLogin.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 
 
+import "./components/Navbar.css";
+import "./components/Layout.css";
+import "./components/Footer.css";
+import "./pages/Login.css";
+import "./pages/AdminLogin.css"; 
+import "./pages/AdminDashboard.css";
+import "./pages/AddItem.css";
+import "./pages/Home.css";
+import "./pages/About.css";
+
+
 export default function App() {
   return (
     <Routes>

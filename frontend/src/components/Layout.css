@@ -1,0 +1,16 @@
+/* ==============================
+   LAYOUT WRAPPER
+============================== */
+.layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* full viewport height */
+}
+
+.page-content {
+  flex: 1 0 auto; /* allows content to grow and push footer down */
+}
+
+.dyptc-footer {
+  flex-shrink: 0;
+}
