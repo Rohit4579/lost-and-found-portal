@@ -5,10 +5,12 @@ import { collection, addDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { uploadToCloudinary } from "../utils/cloudinary";
+import emailjs from "@emailjs/browser";
 import "../index.css";
 
 export default function AddItem() {
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
   const [loggedUser, setLoggedUser] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
@@ -25,7 +27,7 @@ export default function AddItem() {
     category: "lost",
   });
 
-  /* AUTH */
+  /* 🔐 AUTH */
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       if (!user) navigate("/login");
@@ -84,7 +86,25 @@ export default function AddItem() {
     isValidEmail(formData.contact) &&
     Object.values(errors).every((e) => e === "");
 
-  /* SUBMIT */
+  /* 📧 SEND EMAIL (background) */
+  const sendReportEmail = (data) => {
+    emailjs
+      .send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        {
+          email: data.contact,
+          item_name: data.name,
+          status: "Pending",
+         message: "📩 Your report has been submitted successfully. Our team will review it and get back to you soon.",
+
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      )
+      .catch((err) => console.error("Email failed:", err));
+  };
+
+  /* 🚀 SUBMIT */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!loggedUser) return;
@@ -98,18 +118,23 @@ export default function AddItem() {
 
     try {
       let imageUrl = "";
+
+      // 🔥 IMPORTANT: Upload image (if any) BEFORE saving
       if (imageFile) {
         imageUrl = await uploadToCloudinary(imageFile);
       }
 
+      // 1️⃣ Save report (fast)
       await addDoc(collection(db, "reports"), {
         ...formData,
         imageUrl,
-        reporterEmail: loggedUser, // ✅ FIXED
+        reporterEmail: loggedUser,
         status: "pending",
         createdAt: new Date(),
       });
 
+      // 2️⃣ Show success instantly
+      setSuccessMessage("Report submitted successfully!");
       setFormData({
         name: "",
         description: "",
@@ -117,11 +142,13 @@ export default function AddItem() {
         contact: "",
         category: "lost",
       });
-
       setImageFile(null);
       setImagePreview(null);
       setErrors({});
-      setSuccessMessage("Report submitted successfully!");
+
+      // 3️⃣ Send email in background (non-blocking)
+      sendReportEmail(formData);
+
       setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       console.error(err);
@@ -150,19 +177,45 @@ export default function AddItem() {
       </div>
 
       <form onSubmit={handleSubmit} className="add-item-form">
-        <input name="name" placeholder="Item Name" value={formData.name} onChange={handleChange} />
+        <input
+          name="name"
+          placeholder="Item Name"
+          value={formData.name}
+          onChange={handleChange}
+        />
         {errors.name && <p className="field-error">{errors.name}</p>}
 
-        <textarea name="description" placeholder="Description" value={formData.description} onChange={handleChange} />
-        {errors.description && <p className="field-error">{errors.description}</p>}
+        <textarea
+          name="description"
+          placeholder="Description"
+          value={formData.description}
+          onChange={handleChange}
+        />
+        {errors.description && (
+          <p className="field-error">{errors.description}</p>
+        )}
 
-        <input name="location" placeholder="Location" value={formData.location} onChange={handleChange} />
+        <input
+          name="location"
+          placeholder="Location"
+          value={formData.location}
+          onChange={handleChange}
+        />
         {errors.location && <p className="field-error">{errors.location}</p>}
 
-        <input name="contact" placeholder="Contact Email" value={formData.contact} onChange={handleChange} />
+        <input
+          name="contact"
+          placeholder="Contact Email"
+          value={formData.contact}
+          onChange={handleChange}
+        />
         {errors.contact && <p className="field-error">{errors.contact}</p>}
 
-        <select name="category" value={formData.category} onChange={handleChange}>
+        <select
+          name="category"
+          value={formData.category}
+          onChange={handleChange}
+        >
           <option value="lost">Lost</option>
           <option value="found">Found</option>
         </select>
@@ -174,5 +227,3 @@ export default function AddItem() {
     </div>
   );
 }
-
-
