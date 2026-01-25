@@ -1,14 +1,14 @@
-
-/* =====================================================
+/* =========================================================
    FOOTER – DARK NETFLIX STYLE
-===================================================== */
+========================================================= */
 .dyptc-footer {
+  width: 100%;
   background: #0f111a;
   color: #e5e7eb;
   padding: 40px 20px;
   font-family: "Inter", sans-serif;
   border-top: 1px solid #222;
-  flex-shrink: 0; /* prevent shrinking */
+  flex-shrink: 0;
 }
 
 /* Footer main content layout */
@@ -21,9 +21,9 @@
   margin: 0 auto;
 }
 
-/* =====================================================
+/* =========================================================
    FOOTER SECTIONS
-===================================================== */
+========================================================= */
 .footer-section h3,
 .footer-section h4 {
   color: #22d3ee;
@@ -38,9 +38,9 @@
   line-height: 1.6;
 }
 
-/* =====================================================
+/* =========================================================
    FOOTER LINKS
-===================================================== */
+========================================================= */
 .footer-section ul {
   list-style: none;
   padding: 0;
@@ -54,9 +54,7 @@
 .footer-section a {
   color: #9ca3af;
   text-decoration: none;
-  transition-property: color, transform;
-  transition-duration: 0.25s, 0.2s;
-  transition-timing-function: ease;
+  transition: color 0.25s ease, transform 0.2s ease;
 }
 
 .footer-section a:hover {
@@ -64,18 +62,16 @@
   transform: translateX(4px);
 }
 
-/* =====================================================
+/* =========================================================
    FOOTER BOTTOM BAR
-===================================================== */
+========================================================= */
 .footer-bottom {
   text-align: center;
   padding-top: 20px;
-  margin-top: 30px;
-  border-top-width: 1px;
-  border-top-style: solid;
-  border-top-color: #222;
+  border-top: 1px solid #222;
   font-size: 13px;
   color: #9ca3af;
+  margin-top: 0; /* IMPORTANT FIX */
 }
 
 .footer-bottom marquee {
@@ -84,9 +80,9 @@
   font-weight: 500;
 }
 
-/* =====================================================
+/* =========================================================
    FOOTER RESPONSIVE RULES
-===================================================== */
+========================================================= */
 @media (max-width: 768px) {
   .footer-content {
     flex-direction: column;
@@ -107,13 +103,8 @@
   .footer-section li {
     font-size: 13px;
   }
-}
 
-/* Hide desktop-only links on mobile */
-@media (max-width: 768px) {
   .desktop-only {
     display: none;
   }
 }
-
-

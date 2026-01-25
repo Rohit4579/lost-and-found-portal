@@ -1,46 +1,4 @@
-html,
-body {
-  overflow-x: hidden;
-}
 
-/* =========================================================
-   🌙 DARK MODE BODY
-========================================================= */
-*,
-*::before,
-*::after {
-  box-sizing: border-box; /* ensures padding & border included in width */
-}
-
-body {
-  margin: 0;
-  background-color: var(--bg-main);
-  color: var(--text-primary);
-  font-family:
-    "Inter",
-    system-ui,
-    -apple-system,
-    sans-serif;
-}
-
-/* =========================================================
-   🧭 NAVBAR CONTAINER
-========================================================= */
-.dyptc-navbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 14px 20px;
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
-
-  box-shadow: var(--shadow-soft);
-}
 
 /* =========================================================
    🏷 LOGO (ENHANCED)

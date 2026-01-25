@@ -14,7 +14,6 @@ import AdminDashboard from "./pages/AdminDashboard.jsx";
 
 
 import "./components/Navbar.css";
-import "./components/Layout.css";
 import "./components/Footer.css";
 import "./pages/Login.css";
 import "./pages/AdminLogin.css"; 
